@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>CHIKLOO — Birthday.exe ❤️</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#fff2f7;font-family:system-ui,-apple-system,"Trebuchet MS",sans-serif}
+body{touch-action:manipulation}
+button{font:inherit;cursor:pointer}
+.screen{position:fixed;inset:0;width:100vw;height:100dvh;overflow:hidden;display:none;opacity:0}
+.screen.active{display:block;opacity:1;animation:screenIn .55s ease}
+@keyframes screenIn{from{opacity:0;transform:scale(1.015)}to{opacity:1;transform:scale(1)}}
+.bg{position:absolute;inset:0;background:linear-gradient(145deg,#fff8fb,#ffe8f1 52%,#fff2d9)}
+.bg:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(255,255,255,.9),transparent 42%)}
+.decor{position:absolute;z-index:1;pointer-events:none;user-select:none}
+.balloon{font-size:clamp(34px,9vw,60px);animation:float var(--s) ease-in-out infinite alternate}
+@keyframes float{to{transform:translateY(-18px) rotate(5deg)}}
+.spark{font-size:24px;animation:twinkle 1.4s ease-in-out infinite alternate}
+@keyframes twinkle{to{opacity:.25;transform:scale(.65)}}
+.flyheart{font-size:25px;animation:fly 9s linear infinite;opacity:0}
+@keyframes fly{0%{transform:translateY(105vh);opacity:0}15%,85%{opacity:.75}100%{transform:translateY(-15vh) rotate(25deg);opacity:0}}
+.cake{font-size:clamp(40px,11vw,70px);animation:bob 2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px) rotate(2deg)}}
+
+/* Shared */
+.card{position:absolute;z-index:4;left:50%;top:50%;transform:translate(-50%,-50%);width:min(90vw,440px);border-radius:28px;background:rgba(255,255,255,.84);box-shadow:0 20px 65px rgba(140,45,85,.18);padding:25px 20px;text-align:center;backdrop-filter:blur(10px)}
+.btn{border:0;border-radius:999px;padding:14px 24px;background:linear-gradient(135deg,#ff5f95,#d83269);color:#fff;font-weight:800;box-shadow:0 9px 25px rgba(216,50,105,.25)}
+.btn:active{transform:scale(.96)}
+.small{font-size:12px;opacity:.68}
+
+/* Screen 1 */
+.exe{font:clamp(24px,7vw,34px) monospace;letter-spacing:2px;color:#b72f61;margin:4px 0 16px}
+.terminal{min-height:168px;background:#281c27;color:#ffd9e6;border-radius:16px;padding:15px;text-align:left;font:clamp(11px,3.2vw,14px)/1.75 monospace}
+.cursor{display:inline-block;width:7px;height:14px;background:#ff7aa8;animation:blink .7s infinite}
+@keyframes blink{50%{opacity:0}}
+#enter1{opacity:0;pointer-events:none;margin-top:15px}
+.fade{animation:fade .5s forwards!important}
+@keyframes fade{to{opacity:0;transform:scale(1.03)}}
+
+/* Screen 2 */
+.title{position:absolute;z-index:4;top:7%;left:0;width:100%;text-align:center;color:#9d2e5b;padding:0 20px}
+.title h1{margin:0;font-size:clamp(25px,7vw,39px)}
+.title p{margin:8px 0;color:#70405a;font-size:14px}
+.objects{position:absolute;z-index:4;inset:18% 5% 7%}
+.obj{position:absolute;width:clamp(78px,22vw,105px);height:clamp(78px,22vw,105px);border:0;border-radius:24px;background:rgba(255,255,255,.72);box-shadow:0 12px 30px rgba(130,50,90,.13);font-size:clamp(38px,11vw,58px)}
+.obj span{display:block;font-size:11px;color:#7b3151;font-weight:800}
+.gift{left:4%;top:5%}.photoBtn{right:4%;top:3%}.head{left:38%;top:27%}.letter{left:5%;bottom:10%}.lock{right:5%;bottom:7%}
+.monkey{position:absolute;z-index:3;bottom:2%;left:50%;transform:translateX(-50%);font-size:68px;animation:monkey 2.2s ease-in-out infinite alternate}
+@keyframes monkey{to{transform:translateX(-50%) translateY(-9px) rotate(5deg)}}
+.hint{position:absolute;z-index:4;bottom:1%;left:0;width:100%;text-align:center;font-size:11px;color:#8c4b66}
+
+/* Photo surprise */
+.photoScreen{background:#100a0e;color:white}
+.photoScreen .shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.72),rgba(0,0,0,.05) 58%,rgba(0,0,0,.22))}
+.heroPhoto{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .6s,transform 6s;transform:scale(1.04)}
+.heroPhoto.show{opacity:1;transform:scale(1)}
+.caption{position:absolute;z-index:5;left:7%;right:7%;bottom:15%;text-align:center;font-size:clamp(19px,5.3vw,29px);font-weight:800;text-shadow:0 3px 18px #000;opacity:0;transition:.5s}
+.caption.show{opacity:1}
+.topline{position:absolute;z-index:5;top:4%;left:0;right:0;text-align:center;font-size:11px;letter-spacing:1.4px;opacity:.75}
+.bottomBtn{position:absolute;z-index:6;bottom:3%;left:50%;transform:translateX(-50%);opacity:0;pointer-events:none}
+.bottomBtn.show{opacity:1;pointer-events:auto}
+.musicHint{position:absolute;z-index:6;bottom:3.5%;left:50%;transform:translateX(-50%);font-size:11px;opacity:.65;white-space:nowrap}
+
+/* Bholu */
+.bholuScreen{background:linear-gradient(145deg,#fff3f7,#ffe1ec);color:#8d3154}
+.bholuAlert{width:min(90vw,430px)}
+.warn{color:#ff4d6d;font-size:12px;letter-spacing:2px;font-weight:900}
+.bholuAlert h1{font-size:29px;line-height:1.15;margin:15px 0;color:#9c3158}
+.scan{background:#281c27;color:#ffd9e6;border-radius:15px;padding:13px;text-align:left;font:13px/1.7 monospace;margin:18px 0}
+.scan b{float:right;color:#7dff9c}
+.bholuContent{display:none;position:absolute;inset:0;align-items:center;justify-content:center;flex-direction:column;padding:24px}
+.bholuImgBox{width:min(84vw,380px);height:min(61vh,500px);border-radius:25px;overflow:hidden;background:#fff;box-shadow:0 18px 50px rgba(130,50,90,.2);transform:rotate(-1.5deg)}
+.bholuImgBox img{width:100%;height:100%;object-fit:contain;background:#f8eaf0}
+.bholuText{margin-top:22px;max-width:370px;font-size:19px;font-weight:800;text-align:center;line-height:1.4;white-space:pre-line}
+.bholuTap{position:absolute;bottom:3%;font-size:11px;letter-spacing:1.5px;opacity:.65}
+.bholuEnd{display:none;position:absolute;inset:0;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:25px}
+.bholuEnd .bigMonkey{font-size:76px;animation:monkey 1.2s infinite alternate}
+.bholuEnd h2{color:#9c3158;line-height:1.45}
+
+/* Letter */
+.letterScreen{background:linear-gradient(160deg,#fff8fb,#ffe7ef);color:#71304c}
+.letterCard{max-height:84vh;overflow:hidden;width:min(90vw,430px)}
+.letterCard h1{margin:0 0 8px;color:#b72f61;font-size:27px}
+.letterText{font-size:15px;line-height:1.65;min-height:330px;display:flex;align-items:center;justify-content:center;white-space:pre-line}
+.letterNext{margin-top:8px}
+
+/* Lock */
+.lockScreen{background:radial-gradient(circle at 50% 40%,#3b1830,#160b12 70%);color:#fff}
+.lockCard{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);color:#fff}
+.lockCard h1{font-size:28px}.lockCard p{opacity:.78}
+.codeInput{width:100%;padding:15px;border-radius:14px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.25);color:#fff;text-align:center;font-size:18px;outline:none;letter-spacing:3px}
+.error{height:22px;color:#ff9db9;font-size:13px;margin-top:10px}
+
+/* Candle final */
+.finalScreen{background:#080608;color:#fff}
+.candleWrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.candle{font-size:100px;filter:drop-shadow(0 0 18px rgba(255,175,80,.6));animation:candleGlow 1.2s infinite alternate}
+@keyframes candleGlow{to{filter:drop-shadow(0 0 30px rgba(255,175,80,.9))}}
+.finalText{font-size:clamp(22px,6vw,34px);font-weight:900;text-align:center;opacity:0;transform:translateY(15px);transition:.7s}
+.finalText.show{opacity:1;transform:none}
+.blowHint{margin-top:12px;font-size:12px;opacity:.65}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.confetti i{position:absolute;top:-10%;font-style:normal;font-size:22px;animation:fall 3.2s linear forwards}
+@keyframes fall{to{transform:translateY(120vh) rotate(360deg)}}
+.finalMessage{display:none;position:absolute;inset:0;overflow:hidden;padding:28px 22px;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 20%,#321326,#10080e 70%)}
+.messageBox{width:min(92vw,450px);max-height:88vh;overflow:hidden}
+.messageBox h1{font-size:27px;color:#ff8fb2;margin:0 0 12px}
+.messageBox p{font-size:14px;line-height:1.62;margin:6px 0}
+.signature{margin-top:15px;font-size:18px;font-weight:800;color:#ff9cbb}
+.restart{margin-top:18px}
+
+/* Tiny-screen protection */
+@media(max-height:650px){
+ .card{padding:18px}.terminal{min-height:135px}.objects{inset:19% 4% 6%}.title{top:4%}
+ .letterCard{top:48%}.letterText{min-height:270px;font-size:13px}
+}
+</style>
+</head>
+<body>
+
+<!-- SCREEN 1 -->
+<section id="s1" class="screen active">
+  <div class="bg"></div>
+  <div class="decor balloon" style="left:3%;top:6%;--s:3.4s">🎈</div>
+  <div class="decor balloon" style="right:4%;top:13%;--s:4.1s">🎈</div>
+  <div class="decor balloon" style="left:9%;bottom:12%;--s:3.8s">🎈</div>
+  <div class="decor balloon" style="right:12%;bottom:8%;--s:4.5s">🎈</div>
+  <div class="decor cake" style="left:3%;top:42%">🧁</div>
+  <div class="decor cake" style="right:2%;top:49%">🎂</div>
+  <div class="decor spark" style="left:18%;top:23%">✦</div>
+  <div class="decor spark" style="right:17%;top:30%">✧</div>
+  <div class="decor flyheart" style="left:23%;animation-delay:1s">💗</div>
+  <div class="decor flyheart" style="left:67%;animation-delay:3s">💕</div>
+
+  <div class="card">
+    <div style="font-size:22px">♥</div>
+    <div class="exe">CHIKLOO.exe</div>
+    <div class="terminal"><span id="typed"></span><span class="cursor"></span></div>
+    <p id="intro" style="opacity:0;color:#61243e;margin:17px 0 10px">
+      A little birthday world has been made for you. ❤️<br>
+      <span class="small">No scrolling. Just tap your way through.</span>
+    </p>
+    <button class="btn" id="enter1" onclick="go('s2')">TAP TO ENTER ❤️</button>
+  </div>
+</section>
+
+<!-- SCREEN 2 -->
+<section id="s2" class="screen">
+  <div class="bg"></div>
+  <div class="decor balloon" style="left:2%;top:10%;--s:3.6s">🎈</div>
+  <div class="decor balloon" style="right:2%;top:18%;--s:4.2s">🎈</div>
+  <div class="decor balloon" style="left:7%;bottom:8%;--s:3.9s">🎈</div>
+  <div class="decor balloon" style="right:8%;bottom:13%;--s:4.7s">🎈</div>
+  <div class="decor cake" style="left:3%;top:42%">🧁</div>
+  <div class="decor cake" style="right:2%;top:48%">🎂</div>
+  <div class="title"><h1>WELCOME, CHIKLOO ❤️</h1><p>There are little surprises waiting for you...</p></div>
+  <div class="objects">
+    <button class="obj gift" onclick="openGift()">🎁<span>SONG</span></button>
+    <button class="obj photoBtn" onclick="openBholu()">🐒<span>BHOLU</span></button>
+    <button class="obj head" onclick="openPhotos()">📸<span>MEMORIES</span></button>
+    <button class="obj letter" onclick="openLetter()">💌<span>LETTER</span></button>
+    <button class="obj lock" onclick="openLock()">🔐<span>SECRET</span></button>
+  </div>
+  <div class="monkey">🐒</div>
+  <div class="hint">Tap anything you want. Everything has a surprise. 👀</div>
+</section>
+
+<!-- SCREEN 3: SONG -->
+<section id="songScreen" class="screen photoScreen">
+  <div style="position:absolute;inset:0;background:#100a0e"></div>
+  <img id="songPhoto" class="heroPhoto" src="his1.jpg" alt="">
+  <div class="shade"></div>
+  <div class="topline">🎵 A LITTLE SONG FOR MY CHIKLOO ❤️</div>
+  <div id="songCaption" class="caption"></div>
+  <div id="songHint" class="musicHint">Music is starting... ❤️</div>
+  <button id="songDone" class="btn bottomBtn" onclick="backToRoom()">CONTINUE ❤️</button>
+  <audio id="song" src="dekha-hi-nahi.mp3" preload="auto"></audio>
+</section>
+
+<!-- SCREEN 4: Bholu -->
+<section id="bholuScreen" class="screen bholuScreen">
+  <div class="bg"></div>
+  <div id="bholuAlert" class="card bholuAlert">
+    <div class="warn">⚠️ SYSTEM ALERT ⚠️</div>
+    <h1>BHOLU BANDAR<br>DETECTED 🐒</h1>
+    <div class="scan">
+      Scanning cuteness... <b>100%</b><br>
+      Scanning nautanki... <b>100%</b><br>
+      Scanning ragebait behaviour... <b>100%</b>
+    </div>
+    <strong style="color:#e64270">RESULT: 100% BHOLU BANDAR 🐒❤️</strong>
+    <br><button class="btn" style="margin-top:18px" onclick="startBholu()">TAP TO INVESTIGATE 🫢</button>
+  </div>
+
+  <div id="bholuContent" class="bholuContent" onclick="nextBholu()">
+    <div class="bholuImgBox"><img id="bholuImg" src="bholu1.jpg" alt=""></div>
+    <div id="bholuText" class="bholuText"></div>
+    <div class="bholuTap">TAP FOR NEXT 🫢</div>
+  </div>
+
+  <div id="bholuEnd" class="bholuEnd">
+    <div class="bigMonkey">🐒</div>
+    <h2>Saari nautanki ke baad...<br><br>I LOVE THIS CUTU BANDAR SO MUCH. ❤️🥺</h2>
+    <button class="btn" onclick="backToRoom()">TAP TO CONTINUE →</button>
+  </div>
+</section>
+
+<!-- SCREEN 5: MEMORIES -->
+<section id="memoryScreen" class="screen photoScreen">
+  <div style="position:absolute;inset:0;background:#100a0e"></div>
+  <img id="memoryPhoto" class="heroPhoto" src="his1.jpg" alt="">
+  <div class="shade"></div>
+  <div class="topline">📸 JUST MY HANDSOME BABY ❤️</div>
+  <div id="memoryCaption" class="caption"></div>
+  <button class="btn bottomBtn" id="memoryDone" onclick="backToRoom()">BACK TO THE ROOM ❤️</button>
+  <div class="musicHint" id="memoryHint">Tap for the next photo</div>
+</section>
+
+<!-- SCREEN 6: LETTER -->
+<section id="letterScreen" class="screen letterScreen">
+  <div class="bg"></div>
+  <div class="decor flyheart" style="left:15%;animation-delay:.5s">💗</div>
+  <div class="decor flyheart" style="left:75%;animation-delay:2s">❤️</div>
+  <div class="card letterCard">
+    <div style="font-size:25px">💌</div>
+    <h1>A LETTER FOR MY CHIKLOO</h1>
+    <div id="letterText" class="letterText"></div>
+    <button class="btn letterNext" id="letterNext" onclick="nextLetter()">TAP TO READ ❤️</button>
+  </div>
+</section>
+
+<!-- SCREEN 7: SECRET -->
+<section id="lockScreen" class="screen lockScreen">
+  <div class="lockCard card">
+    <div style="font-size:55px">🔐</div>
+    <h1>THE SECRET BOX</h1>
+    <p>Only my Chikloo should know the password. 🫢</p>
+    <p class="small">Hint: the day we met — DDMMYYYY</p>
+    <input id="code" class="codeInput" inputmode="numeric" maxlength="8" placeholder="••••••••">
+    <div id="error" class="error"></div>
+    <button class="btn" onclick="unlock()">UNLOCK ❤️</button>
+  </div>
+</section>
+
+<!-- SCREEN 8: CANDLE -->
+<section id="finalScreen" class="screen finalScreen">
+  <div id="candleWrap" class="candleWrap" onclick="blowCandle()">
+    <div class="candle">🕯️</div>
+    <div class="finalText" id="wishText">Make a wish, Chikloo. ❤️</div>
+    <div class="blowHint">TAP THE CANDLE ✨</div>
+  </div>
+  <div id="confetti" class="confetti"></div>
+
+  <div id="finalMessage" class="finalMessage">
+    <div class="messageBox">
+      <h1>HAPPY BIRTHDAY<br>MERE PYARE HUBBY CHUBBY 😘💖</h1>
+      <p>Sorry aapko mujhpe ab bharosa nhi 🥺<br>Aur shayd pehle jaisa pyar bhi nhi hai 🥺💖</p>
+      <p>But i truly love you ♥️♥️🥺<br>I want to spend my rest of life with you 🥺♥️</p>
+      <p>Pata nhi aap mujhe kabhi apni priority bna bhi paoge ab ya nhi ...per main aapse bahut pyar karta hoon ..</p>
+      <p>Mujhe birthday tak ka intezaar nhi karna main daily keh sakta hoon i love you so much</p>
+      <p>💖🥺♥️♥️ Happy Birthday mere cutu<br>Duniya ki saari khushiyan aapko milen</p>
+      <p>Aur agr aapki Khushi mujhse door Jane main hi ho to main chala bhi jaunga 🥺</p>
+      <p>Per I want you to be happy at the end of the day ♥️💖🎂</p>
+      <p>Ik aisi baatein nhi karni chahiye mujhe wait achchi achchi baatein karta hoon<br>Thodi si smile 😋🫢♥️😘</p>
+      <p>Humari kitni bhi wishes hain saari poori ho jayen shree ji please 🥺<br>
+      Aur hum poora world explore karen<br>Hum Ameer ban jayen sath main 😘♥️<br>
+      Sab kuch sathhhhh 🧿🧿🧿🧿<br>Humesha ♥️🧿</p>
+      <p>Aur bas mere chiklooo ko jaldi theek karde universe 🥺♥️🧿<br>
+      Maine pehle bhi YHI kaha tha ab bhi kehta hoon ...<br>
+      Ek dum pehle jaisa cutu karde mere hubby ko</p>
+      <p>Happy Birthday mere pyare se bachchu ♥️😘<br>
+      I love you so much mere chikloooooooooooooooooooooo ♥️</p>
+      <p>Sorry for hurting you 🥺🥺🥺 baby<br>
+      I don't want us to be sad<br>
+      We are the happiest couple ♥️😘😘 and luckiest too..</p>
+      <div class="signature">Your puchkuuu ♥️</div>
+      <button class="btn restart" onclick="location.reload()">START AGAIN ❤️</button>
+    </div>
+  </div>
+</section>
+
+<script>
+const screens = ["s1","s2","songScreen","bholuScreen","memoryScreen","letterScreen","lockScreen","finalScreen"];
+function go(id){
+  screens.forEach(x=>document.getElementById(x).classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+/* Screen 1 typing */
+const lines=[
+"SYSTEM STARTING...",
+"IDENTIFYING BIRTHDAY BOY...",
+"NAME: ABHI",
+"CODENAME: CHIKLOO",
+"STATUS: TOO CUTUU",
+"ACCESS: GRANTED ❤️"
+];
+let L=0,C=0;
+function typeBoot(){
+  if(L>=lines.length){
+    document.getElementById("intro").style.opacity="1";
+    const b=document.getElementById("enter1");
+    b.style.opacity="1";b.style.pointerEvents="auto";
+    return;
+  }
+  const t=document.getElementById("typed");
+  const line=lines[L];
+  if(C<line.length){
+    t.innerHTML+=line[C++];
+    setTimeout(typeBoot,28);
+  }else{
+    t.innerHTML+="<br>";
+    L++;C=0;
+    setTimeout(typeBoot,220);
+  }
+}
+setTimeout(typeBoot,600);
+
+/* Room -> Song */
+const songPhotos=[
+"his1.jpg","his2.jpg","his3.jpg","his4.jpg","his5.jpg"
+];
+const songCaptions=[
+"Look who finally opened his birthday surprise... 👀❤️",
+"That smile. My favourite. 🥺❤️",
+"My handsome baby. 😘",
+"How can someone be this cute? 🫢",
+"Okay... I'm officially obsessed with my Chikloo. ❤️"
+];
+let songIndex=0,songTimer=null;
+const audio=document.getElementById("song");
+function openGift(){
+  go("songScreen");
+  songIndex=0;
+  document.getElementById("songDone").classList.remove("show");
+  document.getElementById("songHint").style.display="block";
+  showSongPhoto();
+  audio.currentTime=0;
+  audio.volume=0;
+  audio.play().then(()=>{
+    const fade=setInterval(()=>{
+      audio.volume=Math.min(1,audio.volume+.05);
+      if(audio.volume>=.95)clearInterval(fade);
+    },100);
+  }).catch(()=>{
+    document.getElementById("songHint").textContent="Tap the screen once to start the song 🎵";
+    document.getElementById("songScreen").onclick=function(){
+      audio.play().catch(()=>{});
+      this.onclick=null;
+    };
+  });
+  clearInterval(songTimer);
+  songTimer=setInterval(()=>{
+    songIndex++;
+    if(songIndex<songPhotos.length) showSongPhoto();
+    else{
+      clearInterval(songTimer);
+      document.getElementById("songHint").style.display="none";
+      document.getElementById("songDone").classList.add("show");
+    }
+  },5000);
+}
+function showSongPhoto(){
+  const p=document.getElementById("songPhoto"),c=document.getElementById("songCaption");
+  p.classList.remove("show");c.classList.remove("show");
+  setTimeout(()=>{
+    p.src=songPhotos[songIndex];
+    c.textContent=songCaptions[songIndex];
+    p.classList.add("show");
+    setTimeout(()=>c.classList.add("show"),450);
+  },180);
+}
+
+/* Bholu */
+const bholuPhotos=[
+"bholu1.jpg","bholu2.jpg","bholu3.jpg",
+"bholu4.jpg","bholu5.jpg","bholu6.jpg",
+"bholu7.jpg","bholu8.jpg"
+];
+const bholuTexts=[
+"Ye dekho... bandar ne dog filter bhi laga liya 😭😂",
+"Ragebaiting mein PhD kar rakhi hai isne. 😭🫢",
+"Bholu: Main cute hoon. 🥺\nAlso Bholu: 👅😂",
+"Attitude: 100% 😎\nShareefness: 0% 🫢",
+"Ye expression kis planet se aaya hai? 😭🐒",
+"Good vibes... aur thodi si nautanki. 😂❤️",
+"Bas isi face se mujhe pagal banata hai. 🫢❤️",
+"Certified Bholu Bandar. 🐒❤️\nAur haan... mera favourite. 🥺"
+];
+let bi=0;
+function openBholu(){
+  go("bholuScreen");
+  document.getElementById("bholuAlert").style.display="block";
+  document.getElementById("bholuContent").style.display="none";
+  document.getElementById("bholuEnd").style.display="none";
+}
+function startBholu(){
+  bi=0;
+  document.getElementById("bholuAlert").style.display="none";
+  document.getElementById("bholuContent").style.display="flex";
+  showBholu();
+}
+function showBholu(){
+  const im=document.getElementById("bholuImg");
+  im.src=bholuPhotos[bi];
+  document.getElementById("bholuText").textContent=bholuTexts[bi];
+}
+function nextBholu(){
+  bi++;
+  if(bi>=bholuPhotos.length){
+    document.getElementById("bholuContent").style.display="none";
+    document.getElementById("bholuEnd").style.display="flex";
+  }else showBholu();
+}
+
+/* Memories */
+const memPhotos=[
+"his1.jpg","his2.jpg","his3.jpg","his4.jpg","his5.jpg"
+];
+const memTexts=[
+"Just look at you. ❤️",
+"My favourite smile. 🥺",
+"Handsome without even trying. 😘",
+"Chikloo being Chikloo. ❤️",
+"And somehow I love every version of you."
+];
+let mi=0;
+function openPhotos(){
+  go("memoryScreen");mi=0;
+  document.getElementById("memoryDone").classList.remove("show");
+  showMemory();
+}
+function showMemory(){
+  const p=document.getElementById("memoryPhoto"),c=document.getElementById("memoryCaption");
+  p.classList.remove("show");c.classList.remove("show");
+  setTimeout(()=>{p.src=memPhotos[mi];c.textContent=memTexts[mi];p.classList.add("show");setTimeout(()=>c.classList.add("show"),400)},150);
+}
+document.getElementById("memoryScreen").addEventListener("click",e=>{
+  if(e.target.id==="memoryDone")return;
+  mi++;
+  if(mi>=memPhotos.length){
+    document.getElementById("memoryDone").classList.add("show");
+    document.getElementById("memoryHint").textContent="That's enough handsome photos for now. 😋";
+  }else showMemory();
+});
+
+/* Letter */
+const letterPages=[
+"Happy Birthday mere pyare hubby chubby 😘💖\n\nSorry aapko mujhpe ab bharosa nhi 🥺\nAur shayd pehle jaisa pyar bhi nhi hai 🥺💖",
+"But i truly love you ♥️♥️🥺\nI want to spend my rest of life with you 🥺♥️\n\nPata nhi aap mujhe kabhi apni priority bna bhi paoge ab ya nhi ...per main aapse bahut pyar karta hoon ..",
+"Mujhe birthday tak ka intezaar nhi karna main daily keh sakta hoon i love you so much\n\n💖🥺♥️♥️ Happy Birthday mere cutu\nDuniya ki saari khushiyan aapko milen",
+"Aur agr aapki Khushi mujhse door Jane main hi ho to main chala bhi jaunga 🥺\n\nPer I want you to be happy at the end of the day ♥️💖🎂\n\nIk aisi baatein nhi karni chahiye mujhe wait achchi achchi baatein karta hoon\nThodi si smile 😋🫢♥️😘",
+"Humari kitni bhi wishes hain saari poori ho jayen shree ji please 🥺\nAur hum poora world explore karen\nHum Ameer ban jayen sath main 😘♥️\nSab kuch sathhhhh 🧿🧿🧿🧿\nHumesha ♥️🧿",
+"Aur bas mere chiklooo ko jaldi theek karde universe 🥺♥️🧿\nMaine pehle bhi YHI kaha tha ab bhi kehta hoon ...\nEk dum pehle jaisa cutu karde mere hubby ko",
+"Happy Birthday mere pyare se bachchu ♥️😘\nI love you so much mere chikloooooooooooooooooooooo ♥️\n\nSorry for hurting you 🥺🥺🥺 baby\nI don't want us to be sad\nWe are the happiest couple ♥️😘😘 and luckiest too..\n\nYour puchkuuu ♥️"
+];
+let li2=0;
+function openLetter(){
+  go("letterScreen");li2=0;showLetter();
+}
+function showLetter(){
+  document.getElementById("letterText").textContent=letterPages[li2];
+  document.getElementById("letterNext").textContent=li2===letterPages.length-1?"TAP TO RETURN ❤️":"TAP TO READ ❤️";
+}
+function nextLetter(){
+  li2++;
+  if(li2>=letterPages.length)backToRoom();else showLetter();
+}
+
+/* Secret password: 30 January 2025 */
+function openLock(){go("lockScreen");document.getElementById("code").value="";document.getElementById("error").textContent=""}
+function unlock(){
+  const v=document.getElementById("code").value.trim();
+  if(v==="30012025"){
+    document.getElementById("error").textContent="🔓 UNLOCKED";
+    setTimeout(()=>go("finalScreen"),650);
+  }else{
+    document.getElementById("error").textContent="❌ Nope, Baby. Try again. 🫢";
+  }
+}
+
+/* Final candle */
+let blown=false;
+function blowCandle(){
+  if(blown)return;
+  blown=true;
+  document.getElementById("wishText").classList.add("show");
+  setTimeout(()=>{
+    document.getElementById("candleWrap").style.display="none";
+    makeConfetti();
+    setTimeout(()=>document.getElementById("finalMessage").style.display="flex",900);
+  },900);
+}
+function makeConfetti(){
+  const box=document.getElementById("confetti");
+  const icons=["💖","❤️","✨","🎉","🎈","🥺","😘","🧿"];
+  for(let i=0;i<70;i++){
+    const el=document.createElement("i");
+    el.textContent=icons[Math.floor(Math.random()*icons.length)];
+    el.style.left=Math.random()*100+"%";
+    el.style.animationDelay=Math.random()*1.5+"s";
+    el.style.fontSize=(14+Math.random()*18)+"px";
+    box.appendChild(el);
+  }
+}
+function backToRoom(){
+  clearInterval(songTimer);
+  try{
+    const a=document.getElementById("song");
+    let fade=setInterval(()=>{
+      a.volume=Math.max(0,a.volume-.08);
+      if(a.volume<=.02){clearInterval(fade);a.pause();a.currentTime=0}
+    },60);
+  }catch(e){}
+  go("s2");
+}
+</script>
+</body>
+</html>
